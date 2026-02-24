@@ -11,6 +11,7 @@
             --success: #28a745;
             --bg: #f4f7f9;
             --white: #ffffff;
+            --danger: #d9534f;
         }
 
         body {
@@ -38,110 +39,34 @@
             height: fit-content;
         }
 
-        h2 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.4rem;
-            border-bottom: 2px solid var(--bg);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.3rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; margin-bottom: 20px; }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            font-family: inherit;
-        }
-
-        textarea { resize: vertical; min-height: 80px; }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 10px;
-            background-color: var(--primary);
-            color: white;
-        }
-
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; margin-top: 10px; }
         button:hover { background-color: #004494; }
-        button:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        /* Historique et recherche */
-        .search-box {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+        /* Dashboard Stats */
+        .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-item { flex: 1; padding: 10px; border-radius: 8px; text-align: center; color: #fff; font-weight: bold; }
+        .bg-devis { background: var(--success); }
+        .bg-depan { background: var(--danger); }
+        .bg-suivi { background: var(--primary); }
+        .stat-val { font-size: 1.2rem; display: block; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Historique */
+        .search-box { background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; }
+        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .tag-objet { color: var(--primary); font-weight: bold; display: block; font-size: 0.8rem; }
+        .btn-call { background: var(--success); color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.8rem; }
 
-        th {
-            background: #f8f9fa;
-            text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid #dee2e6;
-        }
+        #statusMsg { margin-top: 10px; padding: 10px; border-radius: 6px; display: none; text-align: center; }
 
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            vertical-align: top;
-        }
-
-        .tag-objet {
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 0.85rem;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .btn-call {
-            background: var(--success);
-            color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-
-        #statusMsg {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 6px;
-            display: none;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        @media (max-width: 900px) {
-            .main-container { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -152,64 +77,50 @@
         <h2>Appel Entrant</h2>
         <form id="contactForm">
             <div class="form-group">
-                <label>Nom du Contact / Entreprise</label>
-                <input type="text" id="nom" placeholder="Nom inconnu" required>
+                <label>Nom du Contact</label>
+                <input type="text" id="nom" placeholder="Nom..." required>
             </div>
-            
             <div class="form-group">
                 <label>Numéro de Téléphone</label>
-                <input type="tel" id="tel" placeholder="Numéro inconnu" required>
+                <input type="tel" id="tel" placeholder="+33..." required>
             </div>
-
             <div class="form-group">
                 <label>Objet de l'appel</label>
                 <select id="objet">
                     <option value="Suivi de dossier">Suivi de dossier</option>
                     <option value="Demande de devis">Demande de devis</option>
                     <option value="Demande de Dépannage">Demande de Dépannage</option>
-                    <option value="Autre">Autre</option>
                 </select>
             </div>
-            
             <div class="form-group">
-                <label>Notes de l'échange</label>
-                <textarea id="note" placeholder="Tapez votre compte-rendu ici..."></textarea>
+                <label>Notes</label>
+                <textarea id="note" placeholder="Compte-rendu..."></textarea>
             </div>
-            
-            <button type="submit" id="btnSubmit">ENREGISTRER L'APPEL</button>
+            <button type="submit" id="btnSubmit">ENREGISTRER</button>
         </form>
         <div id="statusMsg"></div>
     </div>
 
     <div class="card">
-
-
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-    <div style="flex:1; background:#ffe3e3; padding:10px; border-radius:8px; text-align:center;">
-        <small>Dépannages</small><br><strong id="statDep">0</strong>
-    </div>
-    <div style="flex:1; background:#e3f2fd; padding:10px; border-radius:8px; text-align:center;">
-        <small>Devis</small><br><strong id="statDevis">0</strong>
-    </div>
-    <div style="flex:1; background:#f1f8e9; padding:10px; border-radius:8px; text-align:center;">
-        <small>Suivis</small><br><strong id="statSuivi">0</strong>
-    </div>
-</div>
+        <h2>Tableau de Bord & Historique</h2>
         
-        <h2>Historique & Recherche</h2>
-        
-        <div class="search-box">
-            <label>🔍 Filtrer l'historique (Nom ou N°)</label>
-            <input type="text" id="searchInput" placeholder="Taper un nom ou un numéro..." onkeyup="filtrerHistorique()">
+        <div class="stats-grid">
+            <div class="stat-item bg-depan"><small>Dépannages</small><span class="stat-val" id="statDep">0</span></div>
+            <div class="stat-item bg-devis"><small>Devis</small><span class="stat-val" id="statDevis">0</span></div>
+            <div class="stat-item bg-suivi"><small>Suivis</small><span class="stat-val" id="statSuivi">0</span></div>
         </div>
 
-        <div id="loader" style="text-align:center; padding: 20px;">Chargement des données...</div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Rechercher un client..." onkeyup="filtrerHistorique()">
+        </div>
+
+        <div id="loader" style="text-align:center;">Chargement...</div>
         
         <table id="historyTable">
             <thead>
                 <tr>
                     <th>Contact</th>
-                    <th>Détails de l'appel</th>
+                    <th>Note</th>
                     <th>Date</th>
                     <th>Action</th>
                 </tr>
@@ -217,47 +128,87 @@
             <tbody id="historyBody"></tbody>
         </table>
     </div>
-
 </div>
 
 <script>
-    // ---------------------------------------------------------
-    // 1. CONFIGURATION : REMPLACEZ PAR VOTRE URL GOOGLE SCRIPT
-    // ---------------------------------------------------------
+    // 1. URL SCRIPT GOOGLE
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH6fgzNVnNnUfiQWZ8B_7wZjejd4ndV0A0HkxUKlWXUnSwh5Y5NPUakPdtevq7s8IY/exec';
 
-    // 2. RÉCUPÉRATION DES VARIABLES YEASTAR {{.CallerNumber}}
+    // 2. REMONTÉE AUTOMATIQUE
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
-        
         let tel = urlParams.get('callerid');
         let nom = urlParams.get('displayname');
 
-        const estVariableVide = (val) => !val || val.includes('{') || val.includes('$') || val.includes('[');
-
-        if (!estVariableVide(tel)) {
+        if (tel && !tel.includes('{')) {
             document.getElementById('tel').value = tel.trim();
-            document.getElementById('searchInput').value = tel.trim(); 
+            document.getElementById('searchInput').value = tel.trim();
         }
-        
-        if (!estVariableVide(nom)) {
+        if (nom && !nom.includes('{')) {
             document.getElementById('nom').value = decodeURIComponent(nom).replace(/\+/g, ' ').trim();
         }
 
-        chargerHistorique().then(() => {
-            if (!estVariableVide(tel)) filtrerHistorique();
-        });
+        chargerHistorique();
     };
 
-    // 3. ENREGISTREMENT VERS GOOGLE SHEETS
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
+    // 3. CHARGEMENT (HISTORIQUE + STATS)
+    async function chargerHistorique() {
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            const res = await response.json();
+            
+            // On sépare les données reçues du script Google
+            const data = res.history; 
+            const stats = res.stats;
+
+            // Mise à jour des compteurs
+            if(stats) {
+                document.getElementById('statDep').innerText = stats.depannage || 0;
+                document.getElementById('statDevis').innerText = stats.devis || 0;
+                document.getElementById('statSuivi').innerText = stats.suivi || 0;
+            }
+
+            const body = document.getElementById('historyBody');
+            document.getElementById('loader').style.display = 'none';
+            body.innerHTML = '';
+
+            data.slice(-20).reverse().forEach(row => {
+                const tr = document.createElement('tr');
+                const dateShort = new Date(row.date).toLocaleDateString('fr-FR');
+                tr.innerHTML = `
+                    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+                    <td><span class="tag-objet">[${row.objet}]</span>${row.note}</td>
+                    <td><small>${dateShort}</small></td>
+                    <td><a href="tel:${row.tel}" class="btn-call">Appeler</a></td>
+                `;
+                body.appendChild(tr);
+            });
+
+            // Une fois chargé, on filtre si un numéro est présent
+            filtrerHistorique();
+
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loader').innerText = "Erreur de chargement.";
+        }
+    }
+
+    // 4. FILTRE
+    function filtrerHistorique() {
+        const filter = document.getElementById("searchInput").value.toUpperCase();
+        const tr = document.getElementById("historyTable").getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName("td")[0];
+            tr[i].style.display = (td && td.innerText.toUpperCase().includes(filter)) ? "" : "none";
+        }
+    }
+
+    // 5. ENVOI
+    document.getElementById('contactForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
-        const status = document.getElementById('statusMsg');
-        
         btn.disabled = true;
-        btn.innerText = "Enregistrement en cours...";
-
+        
         const data = {
             nom: document.getElementById('nom').value,
             tel: document.getElementById('tel').value,
@@ -265,93 +216,14 @@
             note: document.getElementById('note').value
         };
 
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(data)
-        })
+        fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
         .then(() => {
-            status.style.display = 'block';
-            status.style.backgroundColor = '#d4edda';
-            status.style.color = '#155724';
-            status.innerText = "✓ Appel enregistré dans la base !";
-            document.getElementById('note').value = ""; // Vide juste la note
-            setTimeout(() => { status.style.display = 'none'; }, 3000);
-            chargerHistorique(); 
+            alert("✓ Enregistré !");
+            document.getElementById('note').value = "";
+            chargerHistorique();
         })
-        .catch(err => {
-            status.style.display = 'block';
-            status.style.backgroundColor = '#f8d7da';
-            status.innerText = "Erreur de connexion au serveur.";
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerText = "ENREGISTRER L'APPEL";
-        });
-    });
-
-    // 4. CHARGEMENT DE L'HISTORIQUE (LECTURE)
-    async function chargerHistorique() {
-        try {
-            const response = await fetch(GOOGLE_SCRIPT_URL);
-            const data = await response.json();
-            const data = res.history;
-            const stats = res.stats;
-        
-            // Mise à jour des compteurs
-        document.getElementById('statDep').innerText = stats.depannage;
-        document.getElementById('statDevis').innerText = stats.devis;
-        document.getElementById('statSuivi').innerText = stats.suivi;
-            
-            const body = document.getElementById('historyBody');
-            document.getElementById('loader').style.display = 'none';
-            body.innerHTML = '';
-
-            if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="4">Aucun historique disponible.</td></tr>';
-                return;
-            }
-
-            // Affiche les 20 derniers appels (du plus récent au plus ancien)
-            data.slice(-20).reverse().forEach(row => {
-                const tr = document.createElement('tr');
-                const dateObj = new Date(row.date);
-                const dateShort = isNaN(dateObj) ? "Récents" : dateObj.toLocaleDateString('fr-FR');
-                
-                const objet = row.objet || "Appel";
-                const note = row.note || "-";
-
-                tr.innerHTML = `
-                    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                    <td><span class="tag-objet">[${objet}]</span>${note}</td>
-                    <td><small>${dateShort}</small></td>
-                    <td><a href="tel:${row.tel}" class="btn-call">📞 Rappeler</a></td>
-                `;
-                body.appendChild(tr);
-            });
-        } catch (e) {
-            console.error(e);
-            document.getElementById('loader').innerText = "Erreur de chargement de l'historique.";
-        }
-    }
-
-    // 5. FONCTION DE RECHERCHE / FILTRE
-    function filtrerHistorique() {
-        const filter = document.getElementById("searchInput").value.toUpperCase();
-        const tr = document.getElementById("historyTable").getElementsByTagName("tr");
-
-        for (let i = 1; i < tr.length; i++) {
-            const td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-                const txt = td.textContent || td.innerText;
-                tr[i].style.display = txt.toUpperCase().includes(filter) ? "" : "none";
-            }
-        }
-    }
+        .finally(() => btn.disabled = false);
+    };
 </script>
-
 </body>
 </html>
-
-
-
