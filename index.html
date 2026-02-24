@@ -6,49 +6,71 @@
     <title>CRM Pro - Yeastar P520</title>
     <style>
         :root {
-            --primary: #0056b3; --success: #28a745; --danger: #d9534f; --bg: #f4f7f9; --white: #ffffff; --gray: #adb5bd;
+            --primary: #0056b3;
+            --success: #28a745;
+            --danger: #d9534f;
+            --bg: #f4f7f9;
+            --white: #ffffff;
+            --gray: #adb5bd;
         }
+
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         .main-container { display: grid; grid-template-columns: 380px 1fr; gap: 20px; max-width: 1550px; margin: 0 auto; }
-        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; }
+        
+        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; height: fit-content; }
         h2 { margin-top: 0; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; }
+
         .form-group { margin-bottom: 12px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; }
         input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        textarea { height: 120px; }
-        button#btnSubmit { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
-        
-        /* Dashboard Stats Journalières */
+        textarea { height: 120px; resize: vertical; }
+
+        button#btnSubmit { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; transition: 0.2s; }
+        button#btnSubmit:hover { background: #004494; }
+
+        /* Dashboard Stats Cliquables */
         .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-item { flex: 1; padding: 10px 5px; border-radius: 8px; text-align: center; color: white; font-weight: bold; position: relative; }
+        .stat-item { 
+            flex: 1; padding: 10px 5px; border-radius: 8px; text-align: center; color: white; 
+            font-weight: bold; cursor: pointer; transition: transform 0.2s, filter 0.2s; 
+        }
+        .stat-item:hover { transform: scale(1.03); filter: brightness(1.1); }
+        .stat-item:active { transform: scale(0.98); }
         .stat-val { font-size: 1.4rem; display: block; }
         .stat-total { font-size: 0.7rem; opacity: 0.8; display: block; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 5px; padding-top: 2px; }
 
-        /* Historique et Couleurs */
+        /* Couleurs de lignes */
         .row-depan { border-left: 6px solid var(--danger) !important; background-color: #fff8f8 !important; }
         .row-devis { border-left: 6px solid var(--success) !important; background-color: #f8fff8 !important; }
         .row-suivi { border-left: 6px solid var(--primary) !important; background-color: #f8faff !important; }
+
+        /* Recherche */
         .search-box { background: #e9ecef; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; background: white; }
         th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; font-size: 0.8rem; color: #666; }
         td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
-        .btn-mini { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: white; cursor: pointer; border: none; margin-right: 4px; text-decoration: none; }
+
+        /* Boutons d'action miniatures */
+        .btn-mini { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: white; cursor: pointer; border: none; margin-right: 4px; text-decoration: none; font-size: 0.8rem; }
         
+        #statusMsg { margin-top: 10px; padding: 10px; border-radius: 6px; display: none; text-align: center; font-weight: bold; }
+
         @media (max-width: 1000px) { .main-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="main-container">
+    
     <div class="card">
         <h2>Appel Entrant</h2>
         <form id="contactForm">
-            <div class="form-group"><label>Contact</label><input type="text" id="nom" required></div>
+            <div class="form-group"><label>Contact / Société</label><input type="text" id="nom" required></div>
             <div class="form-group">
                 <label>Téléphone</label>
                 <div style="display: flex; gap: 5px;">
                     <input type="tel" id="tel" required>
-                    <button type="button" onclick="searchWeb()" class="btn-mini" style="background:var(--primary); width:40px; height:38px;">🔍</button>
+                    <button type="button" onclick="searchWeb()" class="btn-mini" style="background:var(--primary); width:40px; height:38px;" title="Chercher sur Google">🔍</button>
                 </div>
             </div>
             <div class="form-group">
@@ -59,30 +81,55 @@
                     <option value="Demande de Dépannage">Demande de Dépannage</option>
                 </select>
             </div>
-            <div class="form-group"><label>Notes</label><textarea id="note"></textarea></div>
-            <button type="submit" id="btnSubmit">ENREGISTRER</button>
+            <div class="form-group"><label>Notes (Focus auto)</label><textarea id="note"></textarea></div>
+            <button type="submit" id="btnSubmit">ENREGISTRER L'APPEL</button>
         </form>
         <div id="statusMsg"></div>
     </div>
 
     <div class="card">
-        <h2>Dashboard Journalier</h2>
+        <h2>Dashboard & Historique</h2>
+        
         <div class="stats-grid">
-            <div class="stat-item" style="background:var(--danger)">Dépannages<span class="stat-val" id="statDepJour">0</span><span class="stat-total">Total: <span id="statDepTotal">0</span></span></div>
-            <div class="stat-item" style="background:var(--success)">Devis<span class="stat-val" id="statDevisJour">0</span><span class="stat-total">Total: <span id="statDevisTotal">0</span></span></div>
-            <div class="stat-item" style="background:var(--primary)">Suivis<span class="stat-val" id="statSuiviJour">0</span><span class="stat-total">Total: <span id="statSuiviTotal">0</span></span></div>
+            <div class="stat-item" style="background:var(--danger)" onclick="filtrerParObjet('Dépannage')" title="Filtrer les dépannages">
+                Dépannages<span class="stat-val" id="statDepJour">0</span>
+                <span class="stat-total">Total: <span id="statDepTotal">0</span></span>
+            </div>
+            <div class="stat-item" style="background:var(--success)" onclick="filtrerParObjet('devis')" title="Filtrer les devis">
+                Devis<span class="stat-val" id="statDevisJour">0</span>
+                <span class="stat-total">Total: <span id="statDevisTotal">0</span></span>
+            </div>
+            <div class="stat-item" style="background:var(--primary)" onclick="filtrerParObjet('Suivi')" title="Filtrer les suivis">
+                Suivis<span class="stat-val" id="statSuiviJour">0</span>
+                <span class="stat-total">Total: <span id="statSuiviTotal">0</span></span>
+            </div>
         </div>
-        <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="filtrerHistorique()"></div>
+
+        <div class="search-box">
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="filtrerHistorique()" style="flex:1;">
+                <button onclick="filtrerParObjet('')" style="width:auto; padding:8px 12px; background:var(--gray); color:white; border:none; border-radius:6px; cursor:pointer; font-size:0.75rem;">Voir Tout</button>
+            </div>
+        </div>
+
+        <div id="loader" style="text-align:center; padding:20px;">Chargement...</div>
+        
         <table id="historyTable">
-            <thead><tr><th>Client</th><th>Notes</th><th>Date</th><th>Actions</th></tr></thead>
+            <thead>
+                <tr>
+                    <th style="width:25%">Client</th>
+                    <th style="width:45%">Notes / Objet</th>
+                    <th style="width:15%">Date</th>
+                    <th style="width:15%">Actions</th>
+                </tr>
+            </thead>
             <tbody id="historyBody"></tbody>
         </table>
-        <div id="loader" style="text-align:center; padding:20px;">Chargement...</div>
     </div>
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1NokmA3FbdPVmZweko4_TESZCGXeNVBn8ouhb8ReuHiWOJNFm45puSkve0CawESjZkQ/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1NokmA3FbdPVmZweko4_TESZCGXeNVBn8ouhb8ReuHiWOJNFm45puSkve0CawESjZkQ/exec'; // <-- REMPLACER PAR VOTRE URL /exec
 
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -99,6 +146,7 @@
             const res = await response.json();
             const stats = res.stats;
 
+            // Update Stats (Jour et Total)
             document.getElementById('statDepJour').innerText = stats.depannageJour || 0;
             document.getElementById('statDevisJour').innerText = stats.devisJour || 0;
             document.getElementById('statSuiviJour').innerText = stats.suiviJour || 0;
@@ -113,43 +161,60 @@
             res.history.slice(-20).reverse().forEach(row => {
                 const tr = document.createElement('tr');
                 const obj = (row.objet || "").toUpperCase();
+                
                 if (obj.includes("DÉPANNAGE")) tr.className = "row-depan";
                 else if (obj.includes("DEVIS")) tr.className = "row-devis";
                 else if (obj.includes("SUIVI")) tr.className = "row-suivi";
 
+                const dateStr = new Date(row.date).toLocaleDateString('fr-FR');
+                const noteClean = (row.note || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
                 tr.innerHTML = `
                     <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                    <td><small><strong>[${row.objet}]</strong></small><br>${row.note}</td>
-                    <td><small>${new Date(row.date).toLocaleDateString('fr-FR')}</small></td>
+                    <td><small><strong style="color:var(--primary)">[${row.objet}]</strong></small><br>${row.note}</td>
+                    <td><small>${dateStr}</small></td>
                     <td style="white-space:nowrap;">
-                        <button class="btn-mini" style="background:var(--gray)" onclick="copyNote('${(row.note||"").replace(/'/g,"\\'")}')">📄</button>
-                        <a href="tel:${row.tel}" class="btn-mini" style="background:var(--success)">📞</a>
+                        <button class="btn-mini" style="background:var(--gray)" onclick="copyNote('${noteClean}')" title="Copier">📄</button>
+                        <a href="tel:${row.tel}" class="btn-mini" style="background:var(--success)" title="Appeler">📞</a>
                     </td>`;
                 body.appendChild(tr);
             });
             filtrerHistorique();
-        } catch (e) { document.getElementById('loader').innerText = "Erreur de chargement."; }
+        } catch (e) { document.getElementById('loader').innerText = "Erreur de connexion."; }
     }
 
-    function copyNote(t) { navigator.clipboard.writeText(t); alert("Copié !"); }
-    function searchWeb() { const t = document.getElementById('tel').value; if(t) window.open(`https://www.google.com/search?q=téléphone+${t}`, '_blank'); }
+    // Fonction de filtrage par clic sur stat
+    function filtrerParObjet(mot) {
+        document.getElementById("searchInput").value = mot;
+        filtrerHistorique();
+    }
+
     function filtrerHistorique() {
         const filter = document.getElementById("searchInput").value.toUpperCase();
         const tr = document.getElementById("historyTable").getElementsByTagName("tr");
         for (let i = 1; i < tr.length; i++) {
-            const td = tr[i].getElementsByTagName("td")[0];
-            tr[i].style.display = (td && td.innerText.toUpperCase().includes(filter)) ? "" : "none";
+            const td1 = tr[i].getElementsByTagName("td")[0]; // Nom/Tel
+            const td2 = tr[i].getElementsByTagName("td")[1]; // Note/Objet
+            const text = (td1 ? td1.innerText : "") + (td2 ? td2.innerText : "");
+            tr[i].style.display = text.toUpperCase().includes(filter) ? "" : "none";
         }
     }
 
+    function copyNote(t) { if(!t) return; navigator.clipboard.writeText(t); alert("Note copiée !"); }
+    function searchWeb() { const t = document.getElementById('tel').value; if(t) window.open(`https://www.google.com/search?q=téléphone+${t}`, '_blank'); }
+
     document.getElementById('contactForm').onsubmit = async function(e) {
         e.preventDefault();
-        const btn = document.getElementById('btnSubmit'); btn.disabled = true;
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
         const data = { nom: document.getElementById('nom').value, tel: document.getElementById('tel').value, objet: document.getElementById('objet').value, note: document.getElementById('note').value };
+        
         await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        
         document.getElementById('note').value = "";
-        chargerHistorique();
         btn.disabled = false;
+        chargerHistorique();
+        alert("✓ Enregistré !");
     };
 </script>
 </body>
