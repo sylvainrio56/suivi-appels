@@ -229,6 +229,7 @@
         const data = {
             nom: document.getElementById('nom').value,
             tel: document.getElementById('tel').value,
+            objet: document.getElementById('objet').value,
             note: document.getElementById('note').value
         };
 
@@ -282,12 +283,12 @@
             const dateObj = new Date(row.date);
             const dateShort = isNaN(dateObj) ? "Récent" : dateObj.toLocaleDateString('fr-FR');
             
-            tr.innerHTML = `
-                <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                <td>${row.note}</td>
-                <td><small>${dateShort}</small></td>
-                <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
-            `;
+           tr.innerHTML = `
+    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+    <td><strong>[${row.objet}]</strong> ${row.note}</td> 
+    <td><small>${dateShort}</small></td>
+    <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
+`;
             body.appendChild(tr);
         });
     } catch (e) {
@@ -313,6 +314,7 @@
 
 </body>
 </html>
+
 
 
 
