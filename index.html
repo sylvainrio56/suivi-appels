@@ -291,5 +291,42 @@
             }
 
             // Affiche les 20 derniers appels (du plus récent au plus ancien)
-            data.slice(-20).reverse().
+            data.slice(-20).reverse().forEach(row => {
+                const tr = document.createElement('tr');
+                const dateObj = new Date(row.date);
+                const dateShort = isNaN(dateObj) ? "Récents" : dateObj.toLocaleDateString('fr-FR');
+                
+                const objet = row.objet || "Appel";
+                const note = row.note || "-";
 
+                tr.innerHTML = `
+                    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+                    <td><span class="tag-objet">[${objet}]</span>${note}</td>
+                    <td><small>${dateShort}</small></td>
+                    <td><a href="tel:${row.tel}" class="btn-call">📞 Rappeler</a></td>
+                `;
+                body.appendChild(tr);
+            });
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loader').innerText = "Erreur de chargement de l'historique.";
+        }
+    }
+
+    // 5. FONCTION DE RECHERCHE / FILTRE
+    function filtrerHistorique() {
+        const filter = document.getElementById("searchInput").value.toUpperCase();
+        const tr = document.getElementById("historyTable").getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                const txt = td.textContent || td.innerText;
+                tr[i].style.display = txt.toUpperCase().includes(filter) ? "" : "none";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
