@@ -9,44 +9,63 @@
             --primary: #0056b3;
             --success: #28a745;
             --danger: #d9534f;
-            --warning: #f0ad4e;
             --bg: #f4f7f9;
             --white: #ffffff;
+            --gray: #adb5bd;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .main-container { display: grid; grid-template-columns: 400px 1fr; gap: 20px; max-width: 1500px; margin: 0 auto; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .main-container { display: grid; grid-template-columns: 380px 1fr; gap: 20px; max-width: 1550px; margin: 0 auto; }
         
-        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); height: fit-content; }
-        h2 { margin-top: 0; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); height: fit-content; border: 1px solid #e1e4e8; }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; }
 
         .form-group { margin-bottom: 12px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        textarea { height: 100px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; color: #555; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        textarea { height: 120px; resize: vertical; }
 
-        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
-        button:hover { filter: brightness(90%); }
+        button#btnSubmit { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; transition: 0.2s; }
+        button#btnSubmit:hover { background: #004494; }
 
-        /* Stats */
+        /* Dashboard Stats */
         .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-item { flex: 1; padding: 10px; border-radius: 8px; text-align: center; color: white; font-weight: bold; font-size: 0.9rem; }
+        .stat-item { flex: 1; padding: 12px 5px; border-radius: 8px; text-align: center; color: white; font-weight: bold; }
+        .stat-val { font-size: 1.3rem; display: block; margin-top: 2px; }
 
-        /* Couleurs par Type */
-        .row-depan { border-left: 5px solid var(--danger) !important; background-color: #fff5f5; }
-        .row-devis { border-left: 5px solid var(--success) !important; background-color: #f6fff6; }
-        .row-suivi { border-left: 5px solid var(--primary) !important; background-color: #f6faff; }
+        /* Styles des lignes de l'historique */
+        .row-depan { border-left: 6px solid var(--danger) !important; background-color: #fff8f8 !important; }
+        .row-devis { border-left: 6px solid var(--success) !important; background-color: #f8fff8 !important; }
+        .row-suivi { border-left: 6px solid var(--primary) !important; background-color: #f8faff !important; }
 
-        /* Historique */
-        .search-box { background: #e9ecef; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        /* Historique et Recherche */
+        .search-box { background: #e9ecef; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; background: white; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; font-size: 0.9rem; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; font-size: 0.85rem; color: #666; text-transform: uppercase; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
 
-        .btn-action { padding: 5px 8px; border-radius: 4px; text-decoration: none; color: white; font-size: 0.75rem; margin-right: 5px; cursor: pointer; border:none; }
-        .bg-blue { background: var(--primary); }
+        /* Boutons Miniatures (Actions) */
+        .btn-mini {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            margin-right: 4px;
+            transition: opacity 0.2s;
+        }
+        .btn-mini:hover { opacity: 0.8; }
+        .bg-gray { background: var(--gray); }
         .bg-green { background: var(--success); }
-        .bg-gray { background: #6c757d; }
+        .bg-blue { background: var(--primary); }
+
+        #statusMsg { margin-top: 10px; padding: 10px; border-radius: 6px; display: none; text-align: center; font-weight: bold; }
 
         @media (max-width: 1000px) { .main-container { grid-template-columns: 1fr; } }
     </style>
@@ -60,17 +79,17 @@
         <form id="contactForm">
             <div class="form-group">
                 <label>Contact / Société</label>
-                <input type="text" id="nom" required>
+                <input type="text" id="nom" required placeholder="Nom du client">
             </div>
             <div class="form-group">
                 <label>Téléphone</label>
                 <div style="display: flex; gap: 5px;">
-                    <input type="tel" id="tel" required>
-                    <button type="button" onclick="searchWeb()" style="width: 45px; padding: 0;">🔍</button>
+                    <input type="tel" id="tel" required placeholder="+33...">
+                    <button type="button" onclick="searchWeb()" class="btn-mini bg-blue" style="width: 40px; height: 38px;" title="Chercher sur Google">🔍</button>
                 </div>
             </div>
             <div class="form-group">
-                <label>Objet</label>
+                <label>Objet de l'appel</label>
                 <select id="objet">
                     <option value="Suivi de dossier">Suivi de dossier</option>
                     <option value="Demande de devis">Demande de devis</option>
@@ -78,8 +97,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Notes (Focus auto)</label>
-                <textarea id="note"></textarea>
+                <label>Notes (Focus automatique)</label>
+                <textarea id="note" placeholder="Détails de l'échange..."></textarea>
             </div>
             <button type="submit" id="btnSubmit">ENREGISTRER L'APPEL</button>
         </form>
@@ -87,35 +106,39 @@
     </div>
 
     <div class="card">
-        <h2>Tableau de Bord</h2>
+        <h2>Tableau de Bord & Historique</h2>
+        
         <div class="stats-grid">
-            <div class="stat-item" style="background:var(--danger)">Dépannages<br><span id="statDep">0</span></div>
-            <div class="stat-item" style="background:var(--success)">Devis<br><span id="statDevis">0</span></div>
-            <div class="stat-item" style="background:var(--primary)">Suivis<br><span id="statSuivi">0</span></div>
+            <div class="stat-item" style="background:var(--danger)">Dépannages<span class="stat-val" id="statDep">0</span></div>
+            <div class="stat-item" style="background:var(--success)">Devis<span class="stat-val" id="statDevis">0</span></div>
+            <div class="stat-item" style="background:var(--primary)">Suivis<span class="stat-val" id="statSuivi">0</span></div>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Rechercher un client..." onkeyup="filtrerHistorique()">
+            <input type="text" id="searchInput" placeholder="🔍 Rechercher dans l'historique (Nom ou N°)..." onkeyup="filtrerHistorique()">
         </div>
 
+        <div id="loader" style="text-align:center; padding: 20px;">Chargement des données...</div>
+        
         <table id="historyTable">
             <thead>
                 <tr>
-                    <th>Client</th>
-                    <th>Notes</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th style="width: 25%;">Client</th>
+                    <th style="width: 45%;">Notes / Objet</th>
+                    <th style="width: 15%;">Date</th>
+                    <th style="width: 15%;">Actions</th>
                 </tr>
             </thead>
             <tbody id="historyBody"></tbody>
         </table>
-        <div id="loader" style="text-align:center; padding:10px;">Chargement...</div>
     </div>
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH6fgzNVnNnUfiQWZ8B_7wZjejd4ndV0A0HkxUKlWXUnSwh5Y5NPUakPdtevq7s8IY/exec'; // <-- METTRE VOTRE URL ICI
+    // 1. CONFIGURATION
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH6fgzNVnNnUfiQWZ8B_7wZjejd4ndV0A0HkxUKlWXUnSwh5Y5NPUakPdtevq7s8IY/exec'; 
 
+    // 2. INITIALISATION ET REMONTÉE AUTO
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         let tel = urlParams.get('callerid');
@@ -131,10 +154,11 @@
 
         chargerHistorique();
         
-        // AMÉLIORATION : FOCUS AUTO SUR LA NOTE APRES 1 SEC
-        setTimeout(() => { document.getElementById('note').focus(); }, 1200);
+        // Focus auto sur la note après un court délai
+        setTimeout(() => { document.getElementById('note').focus(); }, 1000);
     };
 
+    // 3. RÉCUPÉRATION DES DONNÉES
     async function chargerHistorique() {
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL);
@@ -142,10 +166,10 @@
             const data = res.history;
             const stats = res.stats;
 
-            // Stats
-            document.getElementById('statDep').innerText = stats.depannage;
-            document.getElementById('statDevis').innerText = stats.devis;
-            document.getElementById('statSuivi').innerText = stats.suivi;
+            // Mise à jour Stats
+            document.getElementById('statDep').innerText = stats.depannage || 0;
+            document.getElementById('statDevis').innerText = stats.devis || 0;
+            document.getElementById('statSuivi').innerText = stats.suivi || 0;
 
             const body = document.getElementById('historyBody');
             document.getElementById('loader').style.display = 'none';
@@ -154,40 +178,47 @@
             data.slice(-20).reverse().forEach(row => {
                 const tr = document.createElement('tr');
                 
-                // AMÉLIORATION : COULEUR SELON OBJET
-                if(row.objet.includes("Dépannage")) tr.className = "row-depan";
-                else if(row.objet.includes("devis")) tr.className = "row-devis";
-                else tr.className = "row-suivi";
+                // --- CODE COULEUR ROBUSTE ---
+                const obj = (row.objet || "").toUpperCase();
+                if (obj.includes("DÉPANNAGE")) tr.className = "row-depan";
+                else if (obj.includes("DEVIS")) tr.className = "row-devis";
+                else if (obj.includes("SUIVI")) tr.className = "row-suivi";
 
                 const dateStr = new Date(row.date).toLocaleDateString('fr-FR');
-                
+                const noteClean = (row.note || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
                 tr.innerHTML = `
                     <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                    <td><small><strong>[${row.objet}]</strong></small><br>${row.note}</td>
+                    <td><small><strong style="color:var(--primary)">[${row.objet}]</strong></small><br>${row.note}</td>
                     <td><small>${dateStr}</small></td>
-                    <td>
-                        <button class="btn-action bg-gray" onclick="copyNote('${row.note.replace(/'/g, "\\'")}')" title="Copier la note">📄</button>
-                        <a href="tel:${row.tel}" class="btn-action bg-green">📞</a>
+                    <td style="white-space: nowrap;">
+                        <button class="btn-mini bg-gray" onclick="copyNote('${noteClean}')" title="Copier la note">📄</button>
+                        <a href="tel:${row.tel}" class="btn-mini bg-green" title="Rappeler">📞</a>
                     </td>
                 `;
                 body.appendChild(tr);
             });
             filtrerHistorique();
-        } catch (e) { document.getElementById('loader').innerText = "Erreur."; }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loader').innerText = "Erreur de chargement.";
+        }
     }
 
-    // AMÉLIORATION : COPIER LA NOTE
+    // 4. ACTIONS (COPIER / RECHERCHE WEB)
     function copyNote(text) {
-        navigator.clipboard.writeText(text);
-        alert("Note copiée dans le presse-papier !");
+        if(!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Note copiée !");
+        });
     }
 
-    // AMÉLIORATION : RECHERCHE WEB
     function searchWeb() {
         const tel = document.getElementById('tel').value;
         if(tel) window.open(`https://www.google.com/search?q=téléphone+${tel}`, '_blank');
     }
 
+    // 5. RECHERCHE DANS LE TABLEAU
     function filtrerHistorique() {
         const filter = document.getElementById("searchInput").value.toUpperCase();
         const tr = document.getElementById("historyTable").getElementsByTagName("tr");
@@ -197,20 +228,35 @@
         }
     }
 
+    // 6. ENVOI DES DONNÉES
     document.getElementById('contactForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
+        const status = document.getElementById('statusMsg');
         btn.disabled = true;
+        btn.innerText = "Enregistrement...";
+
         const data = {
             nom: document.getElementById('nom').value,
             tel: document.getElementById('tel').value,
             objet: document.getElementById('objet').value,
             note: document.getElementById('note').value
         };
-        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        document.getElementById('note').value = "";
-        chargerHistorique();
-        btn.disabled = false;
+
+        try {
+            await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            status.style.display = 'block';
+            status.style.color = 'green';
+            status.innerText = "✓ Enregistré !";
+            document.getElementById('note').value = "";
+            chargerHistorique();
+            setTimeout(() => { status.style.display = 'none'; }, 3000);
+        } catch (err) {
+            alert("Erreur réseau");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "ENREGISTRER L'APPEL";
+        }
     };
 </script>
 </body>
