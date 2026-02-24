@@ -182,6 +182,20 @@
     </div>
 
     <div class="card">
+
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <div style="flex:1; background:#ffe3e3; padding:10px; border-radius:8px; text-align:center;">
+        <small>Dépannages</small><br><strong id="statDep">0</strong>
+    </div>
+    <div style="flex:1; background:#e3f2fd; padding:10px; border-radius:8px; text-align:center;">
+        <small>Devis</small><br><strong id="statDevis">0</strong>
+    </div>
+    <div style="flex:1; background:#f1f8e9; padding:10px; border-radius:8px; text-align:center;">
+        <small>Suivis</small><br><strong id="statSuivi">0</strong>
+    </div>
+</div>
+        
         <h2>Historique & Recherche</h2>
         
         <div class="search-box">
@@ -281,6 +295,14 @@
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL);
             const data = await response.json();
+            const data = res.history;
+            const stats = res.stats;
+        
+            // Mise à jour des compteurs
+        document.getElementById('statDep').innerText = stats.depannage;
+        document.getElementById('statDevis').innerText = stats.devis;
+        document.getElementById('statSuivi').innerText = stats.suivi;
+            
             const body = document.getElementById('historyBody');
             document.getElementById('loader').style.display = 'none';
             body.innerHTML = '';
@@ -330,4 +352,5 @@
 
 </body>
 </html>
+
 
