@@ -108,11 +108,23 @@
     <div class="card">
         <h2>Tableau de Bord & Historique</h2>
         
-        <div class="stats-grid">
-            <div class="stat-item" style="background:var(--danger)">Dépannages<span class="stat-val" id="statDep">0</span></div>
-            <div class="stat-item" style="background:var(--success)">Devis<span class="stat-val" id="statDevis">0</span></div>
-            <div class="stat-item" style="background:var(--primary)">Suivis<span class="stat-val" id="statSuivi">0</span></div>
-        </div>
+      <div class="stats-grid">
+    <div class="stat-item" style="background:var(--danger)">
+        Dépannages<br>
+        <span class="stat-val" id="statDepJour">0</span>
+        <small style="opacity:0.8; font-size:0.7rem;">Total: <span id="statDepTotal">0</span></small>
+    </div>
+    <div class="stat-item" style="background:var(--success)">
+        Devis<br>
+        <span class="stat-val" id="statDevisJour">0</span>
+        <small style="opacity:0.8; font-size:0.7rem;">Total: <span id="statDevisTotal">0</span></small>
+    </div>
+    <div class="stat-item" style="background:var(--primary)">
+        Suivis<br>
+        <span class="stat-val" id="statSuiviJour">0</span>
+        <small style="opacity:0.8; font-size:0.7rem;">Total: <span id="statSuiviTotal">0</span></small>
+    </div>
+</div>
 
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 Rechercher dans l'historique (Nom ou N°)..." onkeyup="filtrerHistorique()">
@@ -166,11 +178,18 @@
             const data = res.history;
             const stats = res.stats;
 
-            // Mise à jour Stats
-            document.getElementById('statDep').innerText = stats.depannage || 0;
-            document.getElementById('statDevis').innerText = stats.devis || 0;
-            document.getElementById('statSuivi').innerText = stats.suivi || 0;
-
+           // Mise à jour Stats dans chargerHistorique()
+    if(stats) {
+        // Journalier (en gros)
+        document.getElementById('statDepJour').innerText = stats.depannageJour || 0;
+        document.getElementById('statDevisJour').innerText = stats.devisJour || 0;
+        document.getElementById('statSuiviJour').innerText = stats.suiviJour || 0;
+        
+        // Cumul (en petit)
+        document.getElementById('statDepTotal').innerText = stats.depannage || 0;
+        document.getElementById('statDevisTotal').innerText = stats.devis || 0;
+        document.getElementById('statSuiviTotal').innerText = stats.suivi || 0;
+    }
             const body = document.getElementById('historyBody');
             document.getElementById('loader').style.display = 'none';
             body.innerHTML = '';
@@ -261,3 +280,4 @@
 </script>
 </body>
 </html>
+
