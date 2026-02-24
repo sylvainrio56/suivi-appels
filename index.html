@@ -3,70 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Contact - Yeastar P520</title>
+    <title>CRM Pro - Yeastar P520</title>
     <style>
         :root {
             --primary: #0056b3;
-            --secondary: #6c757d;
             --success: #28a745;
+            --danger: #d9534f;
+            --warning: #f0ad4e;
             --bg: #f4f7f9;
             --white: #ffffff;
-            --danger: #d9534f;
         }
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        .main-container {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 25px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border: 1px solid #e1e4e8;
-            height: fit-content;
-        }
-
-        h2 { margin-top: 0; color: var(--primary); font-size: 1.3rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; margin-bottom: 20px; }
-
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .main-container { display: grid; grid-template-columns: 400px 1fr; gap: 20px; max-width: 1500px; margin: 0 auto; }
         
-        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background-color: var(--primary); color: white; margin-top: 10px; }
-        button:hover { background-color: #004494; }
+        .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); height: fit-content; }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 10px; }
 
-        /* Dashboard Stats */
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.85rem; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        textarea { height: 100px; }
+
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
+        button:hover { filter: brightness(90%); }
+
+        /* Stats */
         .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-item { flex: 1; padding: 10px; border-radius: 8px; text-align: center; color: #fff; font-weight: bold; }
-        .bg-devis { background: var(--success); }
-        .bg-depan { background: var(--danger); }
-        .bg-suivi { background: var(--primary); }
-        .stat-val { font-size: 1.2rem; display: block; }
+        .stat-item { flex: 1; padding: 10px; border-radius: 8px; text-align: center; color: white; font-weight: bold; font-size: 0.9rem; }
+
+        /* Couleurs par Type */
+        .row-depan { border-left: 5px solid var(--danger) !important; background-color: #fff5f5; }
+        .row-devis { border-left: 5px solid var(--success) !important; background-color: #f6fff6; }
+        .row-suivi { border-left: 5px solid var(--primary) !important; background-color: #f6faff; }
 
         /* Historique */
-        .search-box { background: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; }
-        td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
-        .tag-objet { color: var(--primary); font-weight: bold; display: block; font-size: 0.8rem; }
-        .btn-call { background: var(--success); color: white; padding: 5px 10px; text-decoration: none; border-radius: 4px; font-size: 0.8rem; }
+        .search-box { background: #e9ecef; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; font-size: 0.9rem; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
 
-        #statusMsg { margin-top: 10px; padding: 10px; border-radius: 6px; display: none; text-align: center; }
+        .btn-action { padding: 5px 8px; border-radius: 4px; text-decoration: none; color: white; font-size: 0.75rem; margin-right: 5px; cursor: pointer; border:none; }
+        .bg-blue { background: var(--primary); }
+        .bg-green { background: var(--success); }
+        .bg-gray { background: #6c757d; }
 
-        @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } }
+        @media (max-width: 1000px) { .main-container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -77,15 +59,18 @@
         <h2>Appel Entrant</h2>
         <form id="contactForm">
             <div class="form-group">
-                <label>Nom du Contact</label>
-                <input type="text" id="nom" placeholder="Nom..." required>
+                <label>Contact / Société</label>
+                <input type="text" id="nom" required>
             </div>
             <div class="form-group">
-                <label>Numéro de Téléphone</label>
-                <input type="tel" id="tel" placeholder="+33..." required>
+                <label>Téléphone</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="tel" id="tel" required>
+                    <button type="button" onclick="searchWeb()" style="width: 45px; padding: 0;">🔍</button>
+                </div>
             </div>
             <div class="form-group">
-                <label>Objet de l'appel</label>
+                <label>Objet</label>
                 <select id="objet">
                     <option value="Suivi de dossier">Suivi de dossier</option>
                     <option value="Demande de devis">Demande de devis</option>
@@ -93,48 +78,44 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Notes</label>
-                <textarea id="note" placeholder="Compte-rendu..."></textarea>
+                <label>Notes (Focus auto)</label>
+                <textarea id="note"></textarea>
             </div>
-            <button type="submit" id="btnSubmit">ENREGISTRER</button>
+            <button type="submit" id="btnSubmit">ENREGISTRER L'APPEL</button>
         </form>
         <div id="statusMsg"></div>
     </div>
 
     <div class="card">
-        <h2>Tableau de Bord & Historique</h2>
-        
+        <h2>Tableau de Bord</h2>
         <div class="stats-grid">
-            <div class="stat-item bg-depan"><small>Dépannages</small><span class="stat-val" id="statDep">0</span></div>
-            <div class="stat-item bg-devis"><small>Devis</small><span class="stat-val" id="statDevis">0</span></div>
-            <div class="stat-item bg-suivi"><small>Suivis</small><span class="stat-val" id="statSuivi">0</span></div>
+            <div class="stat-item" style="background:var(--danger)">Dépannages<br><span id="statDep">0</span></div>
+            <div class="stat-item" style="background:var(--success)">Devis<br><span id="statDevis">0</span></div>
+            <div class="stat-item" style="background:var(--primary)">Suivis<br><span id="statSuivi">0</span></div>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Rechercher un client..." onkeyup="filtrerHistorique()">
+            <input type="text" id="searchInput" placeholder="Rechercher un client..." onkeyup="filtrerHistorique()">
         </div>
 
-        <div id="loader" style="text-align:center;">Chargement...</div>
-        
         <table id="historyTable">
             <thead>
                 <tr>
-                    <th>Contact</th>
-                    <th>Note</th>
+                    <th>Client</th>
+                    <th>Notes</th>
                     <th>Date</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="historyBody"></tbody>
         </table>
+        <div id="loader" style="text-align:center; padding:10px;">Chargement...</div>
     </div>
 </div>
 
 <script>
-    // 1. URL SCRIPT GOOGLE
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH6fgzNVnNnUfiQWZ8B_7wZjejd4ndV0A0HkxUKlWXUnSwh5Y5NPUakPdtevq7s8IY/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyH6fgzNVnNnUfiQWZ8B_7wZjejd4ndV0A0HkxUKlWXUnSwh5Y5NPUakPdtevq7s8IY/exec'; // <-- METTRE VOTRE URL ICI
 
-    // 2. REMONTÉE AUTOMATIQUE
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         let tel = urlParams.get('callerid');
@@ -149,24 +130,22 @@
         }
 
         chargerHistorique();
+        
+        // AMÉLIORATION : FOCUS AUTO SUR LA NOTE APRES 1 SEC
+        setTimeout(() => { document.getElementById('note').focus(); }, 1200);
     };
 
-    // 3. CHARGEMENT (HISTORIQUE + STATS)
     async function chargerHistorique() {
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL);
             const res = await response.json();
-            
-            // On sépare les données reçues du script Google
-            const data = res.history; 
+            const data = res.history;
             const stats = res.stats;
 
-            // Mise à jour des compteurs
-            if(stats) {
-                document.getElementById('statDep').innerText = stats.depannage || 0;
-                document.getElementById('statDevis').innerText = stats.devis || 0;
-                document.getElementById('statSuivi').innerText = stats.suivi || 0;
-            }
+            // Stats
+            document.getElementById('statDep').innerText = stats.depannage;
+            document.getElementById('statDevis').innerText = stats.devis;
+            document.getElementById('statSuivi').innerText = stats.suivi;
 
             const body = document.getElementById('historyBody');
             document.getElementById('loader').style.display = 'none';
@@ -174,26 +153,41 @@
 
             data.slice(-20).reverse().forEach(row => {
                 const tr = document.createElement('tr');
-                const dateShort = new Date(row.date).toLocaleDateString('fr-FR');
+                
+                // AMÉLIORATION : COULEUR SELON OBJET
+                if(row.objet.includes("Dépannage")) tr.className = "row-depan";
+                else if(row.objet.includes("devis")) tr.className = "row-devis";
+                else tr.className = "row-suivi";
+
+                const dateStr = new Date(row.date).toLocaleDateString('fr-FR');
+                
                 tr.innerHTML = `
                     <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                    <td><span class="tag-objet">[${row.objet}]</span>${row.note}</td>
-                    <td><small>${dateShort}</small></td>
-                    <td><a href="tel:${row.tel}" class="btn-call">Appeler</a></td>
+                    <td><small><strong>[${row.objet}]</strong></small><br>${row.note}</td>
+                    <td><small>${dateStr}</small></td>
+                    <td>
+                        <button class="btn-action bg-gray" onclick="copyNote('${row.note.replace(/'/g, "\\'")}')" title="Copier la note">📄</button>
+                        <a href="tel:${row.tel}" class="btn-action bg-green">📞</a>
+                    </td>
                 `;
                 body.appendChild(tr);
             });
-
-            // Une fois chargé, on filtre si un numéro est présent
             filtrerHistorique();
-
-        } catch (e) {
-            console.error(e);
-            document.getElementById('loader').innerText = "Erreur de chargement.";
-        }
+        } catch (e) { document.getElementById('loader').innerText = "Erreur."; }
     }
 
-    // 4. FILTRE
+    // AMÉLIORATION : COPIER LA NOTE
+    function copyNote(text) {
+        navigator.clipboard.writeText(text);
+        alert("Note copiée dans le presse-papier !");
+    }
+
+    // AMÉLIORATION : RECHERCHE WEB
+    function searchWeb() {
+        const tel = document.getElementById('tel').value;
+        if(tel) window.open(`https://www.google.com/search?q=téléphone+${tel}`, '_blank');
+    }
+
     function filtrerHistorique() {
         const filter = document.getElementById("searchInput").value.toUpperCase();
         const tr = document.getElementById("historyTable").getElementsByTagName("tr");
@@ -203,26 +197,20 @@
         }
     }
 
-    // 5. ENVOI
     document.getElementById('contactForm').onsubmit = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
         btn.disabled = true;
-        
         const data = {
             nom: document.getElementById('nom').value,
             tel: document.getElementById('tel').value,
             objet: document.getElementById('objet').value,
             note: document.getElementById('note').value
         };
-
-        fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
-        .then(() => {
-            alert("✓ Enregistré !");
-            document.getElementById('note').value = "";
-            chargerHistorique();
-        })
-        .finally(() => btn.disabled = false);
+        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        document.getElementById('note').value = "";
+        chargerHistorique();
+        btn.disabled = false;
     };
 </script>
 </body>
