@@ -25,7 +25,7 @@
             display: grid;
             grid-template-columns: 400px 1fr;
             gap: 25px;
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -35,6 +35,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             border: 1px solid #e1e4e8;
+            height: fit-content;
         }
 
         h2 {
@@ -57,16 +58,17 @@
             font-size: 0.9rem;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 1rem;
+            font-family: inherit;
         }
 
-        textarea { resize: vertical; min-height: 100px; }
+        textarea { resize: vertical; min-height: 80px; }
 
         button {
             width: 100%;
@@ -77,13 +79,14 @@
             cursor: pointer;
             transition: 0.2s;
             margin-top: 10px;
+            background-color: var(--primary);
+            color: white;
         }
 
-        .btn-save { background-color: var(--primary); color: white; }
-        .btn-save:hover { background-color: #004494; }
-        .btn-save:disabled { background-color: #ccc; cursor: not-allowed; }
+        button:hover { background-color: #004494; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        /* Tableau d'historique */
+        /* Historique et recherche */
         .search-box {
             background: #e9ecef;
             padding: 15px;
@@ -107,6 +110,14 @@
             padding: 12px;
             border-bottom: 1px solid #eee;
             vertical-align: top;
+        }
+
+        .tag-objet {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 4px;
         }
 
         .btn-call {
@@ -138,48 +149,53 @@
 <div class="main-container">
     
     <div class="card">
-        <h2>Nouvel Appel</h2>
+        <h2>Appel Entrant</h2>
         <form id="contactForm">
             <div class="form-group">
                 <label>Nom du Contact / Entreprise</label>
-                <input type="text" id="nom" placeholder="Chargement..." required>
+                <input type="text" id="nom" placeholder="Nom inconnu" required>
             </div>
+            
             <div class="form-group">
                 <label>Numéro de Téléphone</label>
-                <input type="tel" id="tel" placeholder="Chargement..." required>
+                <input type="tel" id="tel" placeholder="Numéro inconnu" required>
             </div>
+
             <div class="form-group">
-    <label>Objet de l'appel</label>
-    <select id="objet" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem;">
-        <option value="Suivi de dossier">Suivi de dossier</option>
-        <option value="Demande de devis">Demande de devis</option>
-        <option value="Demande de Dépannage">Demande de Dépannage</option>
-    </select>
-</div>
-            <div class="form-group">
-                <label>Note / Motif de l'appel</label>
-                <textarea id="note" placeholder="Renseignez ici la raison de l'appel..."></textarea>
+                <label>Objet de l'appel</label>
+                <select id="objet">
+                    <option value="Suivi de dossier">Suivi de dossier</option>
+                    <option value="Demande de devis">Demande de devis</option>
+                    <option value="Demande de Dépannage">Demande de Dépannage</option>
+                    <option value="Autre">Autre</option>
+                </select>
             </div>
-            <button type="submit" id="btnSubmit" class="btn-save">ENREGISTRER LA FICHE</button>
+            
+            <div class="form-group">
+                <label>Notes de l'échange</label>
+                <textarea id="note" placeholder="Tapez votre compte-rendu ici..."></textarea>
+            </div>
+            
+            <button type="submit" id="btnSubmit">ENREGISTRER L'APPEL</button>
         </form>
         <div id="statusMsg"></div>
     </div>
 
     <div class="card">
-        <h2>Historique des Échanges</h2>
+        <h2>Historique & Recherche</h2>
         
         <div class="search-box">
-            <label>🔍 Rechercher un client ou un numéro</label>
-            <input type="text" id="searchInput" placeholder="Taper pour filtrer..." onkeyup="filtrerHistorique()">
+            <label>🔍 Filtrer l'historique (Nom ou N°)</label>
+            <input type="text" id="searchInput" placeholder="Taper un nom ou un numéro..." onkeyup="filtrerHistorique()">
         </div>
 
-        <div id="loader" style="text-align:center;">Chargement de la base Google Sheets...</div>
+        <div id="loader" style="text-align:center; padding: 20px;">Chargement des données...</div>
         
         <table id="historyTable">
             <thead>
                 <tr>
                     <th>Contact</th>
-                    <th>Dernière Note</th>
+                    <th>Détails de l'appel</th>
                     <th>Date</th>
                     <th>Action</th>
                 </tr>
@@ -191,40 +207,42 @@
 </div>
 
 <script>
-    // CONFIGURATION
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylAKI0hMS-jGqPT1nDv-iYklTWzSPPVwX66FJSENMwQJWDv9RyQi1BCMDjJOaXbfZmGw/exec';
+    // ---------------------------------------------------------
+    // 1. CONFIGURATION : REMPLACEZ PAR VOTRE URL GOOGLE SCRIPT
+    // ---------------------------------------------------------
+    const GOOGLE_SCRIPT_URL = 'VOTRE_NOUVELLE_URL_SCRIPT_ICI';
 
-    // 1. CAPTURE DES VARIABLES YEASTAR P520 {{.CallerNumber}}
+    // 2. RÉCUPÉRATION DES VARIABLES YEASTAR {{.CallerNumber}}
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         
         let tel = urlParams.get('callerid');
         let nom = urlParams.get('displayname');
 
-        const estInvalide = (val) => !val || val.includes('{') || val.includes('$') || val.includes('[');
+        const estVariableVide = (val) => !val || val.includes('{') || val.includes('$') || val.includes('[');
 
-        if (!estInvalide(tel)) {
+        if (!estVariableVide(tel)) {
             document.getElementById('tel').value = tel.trim();
-            document.getElementById('searchInput').value = tel.trim(); // Pré-filtre la recherche
+            document.getElementById('searchInput').value = tel.trim(); 
         }
         
-        if (!estInvalide(nom)) {
+        if (!estVariableVide(nom)) {
             document.getElementById('nom').value = decodeURIComponent(nom).replace(/\+/g, ' ').trim();
         }
 
         chargerHistorique().then(() => {
-            if (!estInvalide(tel)) filtrerHistorique();
+            if (!estVariableVide(tel)) filtrerHistorique();
         });
     };
 
-    // 2. ENVOI VERS GOOGLE SHEETS
+    // 3. ENREGISTREMENT VERS GOOGLE SHEETS
     document.getElementById('contactForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
         const status = document.getElementById('statusMsg');
         
         btn.disabled = true;
-        btn.innerText = "Enregistrement...";
+        btn.innerText = "Enregistrement en cours...";
 
         const data = {
             nom: document.getElementById('nom').value,
@@ -242,10 +260,10 @@
             status.style.display = 'block';
             status.style.backgroundColor = '#d4edda';
             status.style.color = '#155724';
-            status.innerText = "✓ Fiche enregistrée avec succès !";
-            this.reset();
+            status.innerText = "✓ Appel enregistré dans la base !";
+            document.getElementById('note').value = ""; // Vide juste la note
             setTimeout(() => { status.style.display = 'none'; }, 3000);
-            chargerHistorique(); // Actualiser la liste
+            chargerHistorique(); 
         })
         .catch(err => {
             status.style.display = 'block';
@@ -254,75 +272,23 @@
         })
         .finally(() => {
             btn.disabled = false;
-            btn.innerText = "ENREGISTRER LA FICHE";
+            btn.innerText = "ENREGISTRER L'APPEL";
         });
     });
 
-    // 3. CHARGEMENT DE L'HISTORIQUE
-   async function chargerHistorique() {
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL); // Appel direct sans paramètre
-        if (!response.ok) throw new Error('Erreur réseau');
-        
-        const data = await response.json();
-        const body = document.getElementById('historyBody');
-        const loader = document.getElementById('loader');
-        
-        if (loader) loader.style.display = 'none';
-        body.innerHTML = '';
+    // 4. CHARGEMENT DE L'HISTORIQUE (LECTURE)
+    async function chargerHistorique() {
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL);
+            const data = await response.json();
+            const body = document.getElementById('historyBody');
+            document.getElementById('loader').style.display = 'none';
+            body.innerHTML = '';
 
-        if (data.length === 0) {
-            body.innerHTML = '<tr><td colspan="4">Aucun historique trouvé.</td></tr>';
-            return;
-        }
-
-        // On affiche les 15 derniers résultats
-       data.slice(-15).reverse().forEach(row => {
-    const tr = document.createElement('tr');
-    const dateObj = new Date(row.date);
-    const dateShort = isNaN(dateObj) ? "Récents" : dateObj.toLocaleDateString('fr-FR');
-    
-    // On récupère row.objet et row.note
-    const objetAppel = row.objet || "Appel";
-    const noteAppel = row.note || "";
-
-    tr.innerHTML = `
-        <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-        <td><span style="color:var(--primary); font-weight:bold;">[${objetAppel}]</span><br>${noteAppel}</td>
-        <td><small>${dateShort}</small></td>
-        <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
-    `;
-    body.appendChild(tr);
-});
-    } catch (e) {
-        console.error("Erreur historique:", e);
-        document.getElementById('loader').innerText = "Erreur de chargement (vérifiez la console F12).";
-    }
-}
-
-    // 4. FILTRAGE DE L'HISTORIQUE
-    function filtrerHistorique() {
-        const filter = document.getElementById("searchInput").value.toUpperCase();
-        const tr = document.getElementById("historyTable").getElementsByTagName("tr");
-
-        for (let i = 1; i < tr.length; i++) {
-            const td = tr[i].getElementsByTagName("td")[0];
-            if (td) {
-                const txt = td.textContent || td.innerText;
-                tr[i].style.display = txt.toUpperCase().includes(filter) ? "" : "none";
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="4">Aucun historique disponible.</td></tr>';
+                return;
             }
-        }
-    }
-</script>
 
-</body>
-</html>
-
-
-
-
-
-
-
-
-
+            // Affiche les 20 derniers appels (du plus récent au plus ancien)
+            data.slice(-20).reverse().
