@@ -250,30 +250,43 @@
     });
 
     // 3. CHARGEMENT DE L'HISTORIQUE
-    async function chargerHistorique() {
-        try {
-            const response = await fetch(GOOGLE_SCRIPT_URL + "?action=read");
-            const data = await response.json();
-            const body = document.getElementById('historyBody');
-            document.getElementById('loader').style.display = 'none';
-            body.innerHTML = '';
+   async function chargerHistorique() {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL); // Appel direct sans paramètre
+        if (!response.ok) throw new Error('Erreur réseau');
+        
+        const data = await response.json();
+        const body = document.getElementById('historyBody');
+        const loader = document.getElementById('loader');
+        
+        if (loader) loader.style.display = 'none';
+        body.innerHTML = '';
 
-            // On affiche les 15 derniers résultats
-            data.slice(-15).reverse().forEach(row => {
-                const tr = document.createElement('tr');
-                const dateShort = new Date(row.date).toLocaleDateString('fr-FR');
-                tr.innerHTML = `
-                    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-                    <td>${row.note}</td>
-                    <td><small>${dateShort}</small></td>
-                    <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
-                `;
-                body.appendChild(tr);
-            });
-        } catch (e) {
-            document.getElementById('loader').innerText = "Impossible de charger l'historique.";
+        if (data.length === 0) {
+            body.innerHTML = '<tr><td colspan="4">Aucun historique trouvé.</td></tr>';
+            return;
         }
+
+        // On affiche les 15 derniers résultats
+        data.slice(-15).reverse().forEach(row => {
+            const tr = document.createElement('tr');
+            // Gestion de la date si elle est brute ou formatée
+            const dateObj = new Date(row.date);
+            const dateShort = isNaN(dateObj) ? "Récent" : dateObj.toLocaleDateString('fr-FR');
+            
+            tr.innerHTML = `
+                <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+                <td>${row.note}</td>
+                <td><small>${dateShort}</small></td>
+                <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
+            `;
+            body.appendChild(tr);
+        });
+    } catch (e) {
+        console.error("Erreur historique:", e);
+        document.getElementById('loader').innerText = "Erreur de chargement (vérifiez la console F12).";
     }
+}
 
     // 4. FILTRAGE DE L'HISTORIQUE
     function filtrerHistorique() {
@@ -292,5 +305,6 @@
 
 </body>
 </html>
+
 
 
