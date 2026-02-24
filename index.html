@@ -277,20 +277,23 @@
         }
 
         // On affiche les 15 derniers résultats
-        data.slice(-15).reverse().forEach(row => {
-            const tr = document.createElement('tr');
-            // Gestion de la date si elle est brute ou formatée
-            const dateObj = new Date(row.date);
-            const dateShort = isNaN(dateObj) ? "Récent" : dateObj.toLocaleDateString('fr-FR');
-            
-           tr.innerHTML = `
-    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
-    <td><strong>[${row.objet}]</strong> ${row.note}</td> 
-    <td><small>${dateShort}</small></td>
-    <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
-`;
-            body.appendChild(tr);
-        });
+       data.slice(-15).reverse().forEach(row => {
+    const tr = document.createElement('tr');
+    const dateObj = new Date(row.date);
+    const dateShort = isNaN(dateObj) ? "Récents" : dateObj.toLocaleDateString('fr-FR');
+    
+    // On récupère row.objet et row.note
+    const objetAppel = row.objet || "Appel";
+    const noteAppel = row.note || "";
+
+    tr.innerHTML = `
+        <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+        <td><span style="color:var(--primary); font-weight:bold;">[${objetAppel}]</span><br>${noteAppel}</td>
+        <td><small>${dateShort}</small></td>
+        <td><a href="tel:${row.tel}" class="btn-call">📞 Appeler</a></td>
+    `;
+    body.appendChild(tr);
+});
     } catch (e) {
         console.error("Erreur historique:", e);
         document.getElementById('loader').innerText = "Erreur de chargement (vérifiez la console F12).";
@@ -314,6 +317,7 @@
 
 </body>
 </html>
+
 
 
 
