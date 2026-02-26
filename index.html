@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Contact - Yeastar</title>
+    <title>CRM Pro - Yeastar</title>
     <style>
         :root { --primary: #0056b3; --success: #28a745; --danger: #d9534f; --bg: #f4f7f9; --white: #ffffff; --gray: #adb5bd; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; padding-bottom: 100px; color: #333; }
         .main-container { display: grid; grid-template-columns: 380px 1fr; gap: 20px; max-width: 1550px; margin: 0 auto; }
         .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; height: fit-content; }
         h2 { margin-top: 0; color: var(--primary); font-size: 1.2rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; }
@@ -16,14 +16,12 @@
         textarea { height: 120px; }
         button#btnSubmit { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; background: var(--primary); color: white; }
         
-        /* Stats Cliquables */
         .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-item { flex: 1; padding: 10px 5px; border-radius: 8px; text-align: center; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .stat-item:hover { transform: scale(1.03); filter: brightness(1.1); }
         .stat-val { font-size: 1.4rem; display: block; }
         .stat-total { font-size: 0.7rem; opacity: 0.8; display: block; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 5px; padding-top: 2px; }
 
-        /* Couleurs lignes */
         .row-depan { border-left: 6px solid var(--danger) !important; background-color: #fff8f8 !important; }
         .row-devis { border-left: 6px solid var(--success) !important; background-color: #f8fff8 !important; }
         .row-suivi { border-left: 6px solid var(--primary) !important; background-color: #f8faff !important; }
@@ -34,10 +32,12 @@
         td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
         .btn-mini { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: white; border: none; cursor: pointer; text-decoration: none; margin-right: 4px; }
         
+        /* Cacher les lignes au-delà des 20 premières si pas de recherche */
+        .hidden-row { display: none; }
     </style>
 </head>
 <body>
-    
+
 <div class="main-container">
     <div class="card">
         <h2>Saisie de l'appel</h2>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="card">
-        <h2>Dashboard Journalier</h2>
+        <h2>Dashboard & Historique Complet</h2>
         <div class="stats-grid">
             <div class="stat-item" style="background:var(--danger)" onclick="filtrerRapide('Dépannage')">Dépannages<span class="stat-val" id="stDepJ">0</span><span class="stat-total">Total: <span id="stDepT">0</span></span></div>
             <div class="stat-item" style="background:var(--success)" onclick="filtrerRapide('devis')">Devis<span class="stat-val" id="stDevJ">0</span><span class="stat-total">Total: <span id="stDevT">0</span></span></div>
@@ -72,7 +72,7 @@
         </div>
         <div class="search-box">
             <div style="display:flex; gap:10px;">
-                <input type="text" id="searchInput" placeholder="🔍 Rechercher..." onkeyup="filtrerHistorique()" style="flex:1;">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher dans TOUT l'historique..." onkeyup="filtrerHistorique()" style="flex:1;">
                 <button onclick="filtrerRapide('')" style="background:var(--gray); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Tous</button>
             </div>
         </div>
@@ -90,7 +90,10 @@
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         let tel = urlParams.get('callerid'), nom = urlParams.get('displayname');
-        if (tel && !tel.includes('{')) { document.getElementById('tel').value = tel.trim(); document.getElementById('searchInput').value = tel.trim(); }
+        if (tel && !tel.includes('{')) { 
+            document.getElementById('tel').value = tel.trim(); 
+            document.getElementById('searchInput').value = tel.trim(); 
+        }
         if (nom && !nom.includes('{')) { document.getElementById('nom').value = decodeURIComponent(nom).replace(/\+/g, ' ').trim(); }
         chargerHistorique();
         setTimeout(() => { document.getElementById('note').focus(); }, 1000);
@@ -112,12 +115,19 @@
             document.getElementById('loader').style.display = 'none';
             body.innerHTML = '';
 
-            res.history.slice(-20).reverse().forEach(row => {
+            // MODIFICATION : On prend TOUT l'historique (pas de slice)
+            const allRows = res.history.reverse();
+            
+            allRows.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 const obj = (row.objet || "").toUpperCase();
-                if (obj.includes("DÉPANNAGE")) tr.className = "row-depan";
-                else if (obj.includes("DEVIS")) tr.className = "row-devis";
-                else if (obj.includes("SUIVI")) tr.className = "row-suivi";
+                
+                // On ajoute une classe pour identifier les lignes récentes (top 20)
+                if (index >= 20) { tr.classList.add('hidden-row'); }
+
+                if (obj.includes("DÉPANNAGE")) tr.className += " row-depan";
+                else if (obj.includes("DEVIS")) tr.className += " row-devis";
+                else if (obj.includes("SUIVI")) tr.className += " row-suivi";
 
                 tr.innerHTML = `
                     <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
@@ -129,16 +139,26 @@
                     </td>`;
                 body.appendChild(tr);
             });
-            filtrerHistorique();
+            filtrerHistorique(); // Applique le filtre si un numéro est déjà présent
         } catch (e) { document.getElementById('loader').innerText = "Erreur."; }
     }
 
     function filtrerRapide(m) { document.getElementById("searchInput").value = m; filtrerHistorique(); }
+
+    // MODIFICATION : Nouvelle logique de filtrage complet
     function filtrerHistorique() {
         const filter = document.getElementById("searchInput").value.toUpperCase();
         const tr = document.getElementById("historyTable").getElementsByTagName("tr");
+        
         for (let i = 1; i < tr.length; i++) {
-            tr[i].style.display = tr[i].innerText.toUpperCase().includes(filter) ? "" : "none";
+            const text = tr[i].innerText.toUpperCase();
+            if (filter === "") {
+                // Si recherche vide : on réaffiche seulement les 20 premiers
+                tr[i].style.display = (i <= 20) ? "" : "none";
+            } else {
+                // Si recherche active : on fouille dans TOUT l'historique
+                tr[i].style.display = text.includes(filter) ? "" : "none";
+            }
         }
     }
 
@@ -156,11 +176,15 @@
         alert("Enregistré !");
     };
 </script>
-   <script src="https://technicophone.ras.yeastar.com/live_chat.v1.0.0.js?channelNumber=LC00001"></script>
+
+<script>
+    window.addEventListener('load', function() {
+        var chatScript = document.createElement('script');
+        chatScript.src = "https://technicophone.ras.yeastar.com/live_chat.v1.0.0.js?channelNumber=LC00001";
+        chatScript.async = true;
+        document.body.appendChild(chatScript);
+    });
+</script>
+
 </body>
 </html>
-
-
-
-
-
