@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Intégré - Yeastar P-Series</title>
+    <title>CRM Technicophone</title>
     <style>
         :root { --primary: #0056b3; --success: #28a745; --danger: #d9534f; --bg: #f4f7f9; --white: #ffffff; --gray: #adb5bd; --warning: #ffc107; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; padding-bottom: 100px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; padding-bottom: 100px; }
         .main-container { display: grid; grid-template-columns: 380px 1fr; gap: 20px; max-width: 1550px; margin: 0 auto; }
         .card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; height: fit-content; }
-        h2 { margin-top: 0; color: var(--primary); font-size: 1.1rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.1rem; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; margin-bottom: 15px; }
         
-        /* Stats Styles */
+        /* Stats */
         .stats-grid { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-item { flex: 1; padding: 10px 5px; border-radius: 8px; text-align: center; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .stat-item:hover { transform: scale(1.03); filter: brightness(1.1); }
         .stat-val { font-size: 1.4rem; display: block; }
-        .stat-total { font-size: 0.7rem; opacity: 0.8; display: block; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 5px; padding-top: 2px; }
+        .stat-total { font-size: 0.7rem; opacity: 0.8; display: block; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 5px; }
 
-        /* Form Styles */
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.8rem; color: #666; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        textarea { height: 100px; border: 1px solid var(--primary); }
+        /* Form */
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; margin-bottom: 10px; }
+        textarea { height: 100px; border: 2px solid var(--primary); }
+        button#btnSubmit { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
         /* Status & Rows */
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: none; min-width: 80px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { text-align: left; padding: 12px; font-size: 0.75rem; color: #888; border-bottom: 2px solid #eee; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: none; }
         .pending { background: var(--warning); color: #856404; }
-        .completed { background: #d4edda; color: #155724; opacity: 0.7; }
-        .is-done { background-color: #f8f9fa !important; color: #adb5bd; }
+        .completed { background: #d4edda; color: #155724; opacity: 0.6; }
+        .is-done { background-color: #f8f9fa !important; color: #adb5bd; text-decoration: line-through; }
         .row-depan { border-left: 6px solid var(--danger) !important; }
         .row-devis { border-left: 6px solid var(--success) !important; }
         .row-suivi { border-left: 6px solid var(--primary) !important; }
-
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #dee2e6; font-size: 0.75rem; color: #888; }
-        td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
-        
-        .btn-mini { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 4px; color: white; border: none; cursor: pointer; text-decoration: none; }
         #loader { text-align: center; padding: 10px; font-weight: bold; color: var(--primary); }
     </style>
 </head>
@@ -45,106 +40,115 @@
 
 <div class="main-container">
     <div class="card">
-        <h2>Appel Entrant</h2>
+        <h2>Saisie de l'appel</h2>
         <form id="contactForm">
-            <div class="form-group"><label>Nom / Société</label><input type="text" id="nom" required></div>
-            <div class="form-group"><label>Téléphone</label><input type="tel" id="tel" required></div>
-            <div class="form-group">
-                <label>Objet</label>
-                <select id="objet">
-                    <option value="Suivi de dossier">Suivi de dossier</option>
-                    <option value="Demande de devis">Demande de devis</option>
-                    <option value="Demande de Dépannage">Demande de Dépannage</option>
-                </select>
-            </div>
-            <div class="form-group"><label>Notes</label><textarea id="note"></textarea></div>
-            <button type="submit" id="btnSubmit" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">ENREGISTRER L'APPEL</button>
+            <label>Nom / Société</label><input type="text" id="nom" required>
+            <label>Téléphone</label><input type="tel" id="tel" required>
+            <label>Objet</label>
+            <select id="objet">
+                <option value="Suivi de dossier">Suivi de dossier</option>
+                <option value="Demande de devis">Demande de devis</option>
+                <option value="Demande de Dépannage">Demande de Dépannage</option>
+            </select>
+            <label>Notes</label><textarea id="note"></textarea>
+            <button type="submit" id="btnSubmit">ENREGISTRER</button>
         </form>
     </div>
 
     <div class="card">
-        <h2>Dashboard Journalier</h2>
-        
+        <h2>Dashboard</h2>
         <div class="stats-grid">
-            <div class="stat-item" style="background:var(--danger)" onclick="filtrerRapide('Dépannage')">
-                Dépannages <span class="stat-val" id="stDepJ">0</span>
-                <span class="stat-total">Total: <span id="stDepT">0</span></span>
-            </div>
-            <div class="stat-item" style="background:var(--success)" onclick="filtrerRapide('devis')">
-                Devis <span class="stat-val" id="stDevJ">0</span>
-                <span class="stat-total">Total: <span id="stDevT">0</span></span>
-            </div>
-            <div class="stat-item" style="background:var(--primary)" onclick="filtrerRapide('Suivi')">
-                Suivis <span class="stat-val" id="stSuiJ">0</span>
-                <span class="stat-total">Total: <span id="stSuiT">0</span></span>
-            </div>
+            <div class="stat-item" style="background:var(--danger)" onclick="filtrerRapide('Dépannage')">Dépannages <span class="stat-val" id="stDepJ">0</span><span class="stat-total">Total: <span id="stDepT">0</span></span></div>
+            <div class="stat-item" style="background:var(--success)" onclick="filtrerRapide('devis')">Devis <span class="stat-val" id="stDevJ">0</span><span class="stat-total">Total: <span id="stDevT">0</span></span></div>
+            <div class="stat-item" style="background:var(--primary)" onclick="filtrerRapide('Suivi')">Suivis <span class="stat-val" id="stSuiJ">0</span><span class="stat-total">Total: <span id="stSuiT">0</span></span></div>
         </div>
-
-        <div style="margin-bottom:15px; display:flex; gap:10px;">
-            <input type="text" id="searchInput" placeholder="🔍 Rechercher un client ou 'À faire'..." onkeyup="filtrerHistorique()" style="flex:1; padding:10px; border-radius:6px; border:1px solid #ccc;">
-            <button onclick="filtrerRapide('')" style="padding:10px; border:none; background:var(--gray); color:white; border-radius:6px; cursor:pointer;">Tous</button>
-        </div>
-        
-        <div id="loader">Chargement des données...</div>
-        
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher un client ou 'À faire'..." onkeyup="filtrerHistorique()" style="padding:10px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; width:100%;">
+        <div id="loader">Chargement...</div>
         <table id="historyTable">
-            <thead>
-                <tr>
-                    <th style="width:110px">Statut</th>
-                    <th>Client</th>
-                    <th>Note / Objet</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
+            <thead><tr><th style="width:110px">Statut</th><th>Client</th><th>Note / Objet</th><th>Date</th></tr></thead>
             <tbody id="historyBody"></tbody>
         </table>
     </div>
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAPlgFJ9gco3xOmg1PBJdCdar-jK5-x_LYX-LsNgt0FuaBvT_xeZY6V3HMyDNUD3Zj2Q/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby31tmwUAASUNE9ftnYW3_sLJ9vyZnwUJqEO6aCmQcSHpae5LAiP5Kx6YqrmaD3cjsLbw/exec';
 
     window.onload = function() {
-        // RÉCUPÉRATION AUTO YEASTAR
-        const urlParams = new URLSearchParams(window.location.search);
-        let tel = urlParams.get('callerid');
-        let nom = urlParams.get('displayname');
-
-        if (tel && !tel.includes('{')) { 
-            document.getElementById('tel').value = tel.trim(); 
-            document.getElementById('searchInput').value = tel.trim(); 
+        const params = new URLSearchParams(window.location.search);
+        let tel = params.get('callerid'), nom = params.get('displayname');
+        if (tel && !tel.includes('{{')) { 
+            document.getElementById('tel').value = tel; 
+            document.getElementById('searchInput').value = tel; 
         }
-        if (nom && !nom.includes('{')) { 
-            document.getElementById('nom').value = decodeURIComponent(nom).replace(/\+/g, ' ').trim(); 
+        if (nom && !nom.includes('{{')) { 
+            document.getElementById('nom').value = decodeURIComponent(nom).replace(/\+/g, ' '); 
         }
-        
         chargerHistorique();
-        setTimeout(() => { document.getElementById('note').focus(); }, 1000);
+        setTimeout(() => document.getElementById('note').focus(), 1000);
     };
 
     async function chargerHistorique() {
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL);
             const res = await response.json();
-            
-            // MISE À JOUR DES STATS
             const s = res.stats;
-            document.getElementById('stDepJ').innerText = s.depannageJour || 0;
-            document.getElementById('stDevJ').innerText = s.devisJour || 0;
-            document.getElementById('stSuiJ').innerText = s.suiviJour || 0;
-            document.getElementById('stDepT').innerText = s.depannage || 0;
-            document.getElementById('stDevT').innerText = s.devis || 0;
-            document.getElementById('stSuiT').innerText = s.suivi || 0;
+            document.getElementById('stDepJ').innerText = s.depannageJour;
+            document.getElementById('stDevJ').innerText = s.devisJour;
+            document.getElementById('stSuiJ').innerText = s.suiviJour;
+            document.getElementById('stDepT').innerText = s.depannage;
+            document.getElementById('stDevT').innerText = s.devis;
+            document.getElementById('stSuiT').innerText = s.suivi;
 
             const body = document.getElementById('historyBody');
             document.getElementById('loader').style.display = 'none';
             body.innerHTML = '';
-
             res.history.reverse().forEach((row) => {
                 const tr = document.createElement('tr');
                 const isDone = (row.status === true || row.status === "TRUE");
                 if (isDone) tr.classList.add('is-done');
-                
                 const obj = (row.objet || "").toUpperCase();
-                if (obj.includes("DÉPANNAGE")) tr.className += " row-depan
+                if (obj.includes("DÉPANNAGE")) tr.className += " row-depan";
+                else if (obj.includes("DEVIS")) tr.className += " row-devis";
+                else if (obj.includes("SUIVI")) tr.className += " row-suivi";
+
+                tr.innerHTML = `
+                    <td><button class="status-badge ${isDone ? 'completed' : 'pending'}" onclick="toggleStatus('${row.nom}', '${row.tel}', ${!isDone})">${isDone ? '✅ Traité' : '🔔 À faire'}</button></td>
+                    <td><strong>${row.nom}</strong><br><small>${row.tel}</small></td>
+                    <td><small><strong>[${row.objet}]</strong></small><br>${row.note}</td>
+                    <td><small>${new Date(row.date).toLocaleDateString('fr-FR')}</small></td>`;
+                body.appendChild(tr);
+            });
+            filtrerHistorique();
+        } catch (e) { document.getElementById('loader').innerText = "Erreur."; }
+    }
+
+    async function toggleStatus(nom, tel, newStatus) {
+        document.getElementById('loader').style.display = 'block';
+        const data = { action: "UPDATE_STATUS", nom: nom, tel: tel, status: newStatus };
+        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+        chargerHistorique();
+    }
+
+    document.getElementById('contactForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit'); btn.disabled = true;
+        const data = { nom: document.getElementById('nom').value, tel: document.getElementById('tel').value, objet: document.getElementById('objet').value, note: document.getElementById('note').value };
+        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        document.getElementById('note').value = ""; btn.disabled = false;
+        chargerHistorique();
+    };
+
+    function filtrerRapide(m) { document.getElementById("searchInput").value = m; filtrerHistorique(); }
+    function filtrerHistorique() {
+        const filter = document.getElementById("searchInput").value.toUpperCase();
+        const tr = document.getElementById("historyTable").getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            tr[i].style.display = tr[i].innerText.toUpperCase().includes(filter) ? "" : "none";
+        }
+    }
+</script>
+
+<script src="https://technicophone.ras.yeastar.com/live_chat.v1.0.0.js?channelNumber=LC00001"></script>
+</body>
+</html>
